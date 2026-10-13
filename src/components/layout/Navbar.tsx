@@ -150,6 +150,17 @@ export default function Navbar() {
               AI Tutor
             </Link>
             <Link
+              href="/avl-story"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                pathname === '/avl-story'
+                  ? 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-sky-500 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+              }`}
+            >
+              <span>👑</span>
+              AVL Story
+            </Link>
+            <Link
               href="/study-planner"
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 pathname === '/study-planner'

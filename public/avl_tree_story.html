@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AVL Tree - Animated Educational Story</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes crownWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+    @keyframes sweatDrop {
+      0% { opacity: 0; transform: translateY(-4px) scale(0.6); }
+      50% { opacity: 1; transform: translateY(4px) scale(1); }
+      100% { opacity: 0; transform: translateY(12px) scale(0.8); }
+    }
+    @keyframes alarmPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #ef4444); }
+      50% { transform: scale(1.25); filter: drop-shadow(0 0 16px #dc2626); }
+    }
+    @keyframes shakeImbalance {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-4px, 2px) rotate(-3deg); }
+      40% { transform: translate(4px, -2px) rotate(3deg); }
+      60% { transform: translate(-3px, -2px) rotate(-2deg); }
+      80% { transform: translate(3px, 2px) rotate(2deg); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes dropIn {
+      0% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+      70% { transform: translateY(8px) scale(1.08); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes celebrationHop {
+      0%, 100% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-18px) scale(1.05); }
+      60% { transform: translateY(-6px) scale(0.98); }
+    }
+
+    .bounce-gentle { animation: gentleBounce 2.5s infinite ease-in-out; }
+    .crown-wiggle { animation: crownWiggle 2s infinite ease-in-out; transform-origin: bottom center; }
+    .alarm-blink { animation: alarmPulse 0.8s infinite ease-in-out; }
+    .shaking { animation: shakeImbalance 0.5s infinite ease-in-out; }
+    .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .drop-in { animation: dropIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .celebrate { animation: celebrationHop 0.8s ease-out; }
+    .sweat-anim { animation: sweatDrop 1.2s infinite ease-in; }
+
+    /* 3D Cute Pixar-style Blue Sphere Node */
+    .pixar-node {
+      border-radius: 9999px;
+      background: radial-gradient(circle at 32% 28%, #70c4ff 0%, #2f8cf5 45%, #1860d4 80%, #0d3b8f 100%);
+      box-shadow: inset -4px -6px 12px rgba(10, 35, 90, 0.55),
+                  inset 4px 6px 10px rgba(255, 255, 255, 0.75),
+                  0 12px 24px rgba(24, 96, 212, 0.35);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Node Faces */
+    .eye {
+      width: 14px;
+      height: 18px;
+      background: white;
+      border-radius: 9999px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .pupil {
+      width: 8px;
+      height: 10px;
+      background: #111827;
+      border-radius: 9999px;
+      position: absolute;
+      top: 4px;
+      left: 3px;
+    }
+    .pupil::after {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: white;
+      border-radius: 50%;
+      top: 1px;
+      left: 1px;
+    }
+    .mouth-happy {
+      width: 16px;
+      height: 8px;
+      border-bottom: 3px solid #0f172a;
+      border-radius: 0 0 16px 16px;
+      margin-top: 2px;
+    }
+    .mouth-worried {
+      width: 14px;
+      height: 6px;
+      border-top: 3px solid #0f172a;
+      border-radius: 14px 14px 0 0;
+      margin-top: 4px;
+    }
+    .mouth-scared {
+      width: 12px;
+      height: 12px;
+      background: #7f1d1d;
+      border-radius: 50%;
+      border: 2px solid #1e293b;
+      margin-top: 3px;
+    }
+    .mouth-smug {
+      width: 14px;
+      height: 5px;
+      border-bottom: 3px solid #0f172a;
+      border-radius: 0 0 10px 4px;
+      transform: rotate(-6deg);
+    }
+    .mouth-annoyed {
+      width: 14px;
+      height: 3px;
+      background: #0f172a;
+      border-radius: 2px;
+      transform: rotate(-4deg);
+    }
+
+    /* Branch Connector */
+    .branch-line {
+      position: absolute;
+      background: #2563eb;
+      height: 8px;
+      border-radius: 6px;
+      transform-origin: left center;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 3px 6px rgba(0,0,0,0.15);
+      z-index: 0;
+      transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Sunglasses */
+    .sunglasses {
+      position: absolute;
+      top: 16px;
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      z-index: 10;
+    }
+    .sg-lens {
+      width: 22px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 3px 3px 10px 10px;
+      border: 2px solid #334155;
+      position: relative;
+      overflow: hidden;
+    }
+    .sg-lens::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 3px;
+      background: rgba(255,255,255,0.4);
+      transform: rotate(35deg);
+      top: 4px;
+      left: -4px;
+    }
+    .sg-bridge {
+      width: 6px;
+      height: 2px;
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 flex flex-col items-center select-none">
+
+  <!-- Container -->
+  <div class="w-full max-w-5xl bg-slate-950/80 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 backdrop-blur-md">
+    
+    <!-- Header with Sound / Controls -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20">
+          👑
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-black bg-gradient-to-r from-sky-300 via-blue-400 to-indigo-300 bg-clip-text text-transparent">
+              AVL Tree Storybook
+            </h1>
+            <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-sky-400 border border-blue-500/30">
+              Pixar 3D Mode
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Interactive Animated Walkthrough • 10 Scenes of Self-Balancing Magic</p>
+        </div>
+      </div>
+
+      <!-- Audio & Playback Controls -->
+      <div class="flex items-center gap-2">
+        <button id="soundToggle" onclick="toggleSound()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-sky-300 border border-slate-700 transition">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">Sound FX: ON</span>
+        </button>
+
+        <button id="autoplayBtn" onclick="toggleAutoPlay()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md shadow-blue-600/30 transition">
+          <span id="autoIcon">▶</span>
+          <span id="autoLabel">Auto Story</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Stage Frame -->
+    <div class="relative w-full h-[470px] bg-gradient-to-b from-sky-500/10 via-slate-900 to-slate-950 rounded-2xl border border-slate-800/80 overflow-hidden shadow-inner flex flex-col justify-between p-5" id="stageContainer">
+      
+      <!-- Top Scene Header Banner -->
+      <div class="flex items-center justify-between z-20">
+        <div>
+          <span id="sceneBadge" class="text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 shadow-sm">
+            Scene 1 / 10
+          </span>
+          <h2 id="sceneTitle" class="text-xl font-black text-white mt-1 drop-shadow-sm">
+            AVL Tree: Always Balanced
+          </h2>
+        </div>
+
+        <!-- Dynamic Live Balance Factor Indicator -->
+        <div id="meterContainer" class="flex items-center gap-3 bg-slate-900/90 border border-slate-700/60 rounded-2xl px-4 py-2 shadow-lg backdrop-blur-md">
+          <div class="text-right">
+            <div class="text-[11px] font-semibold text-slate-400">Balance Factor (BF)</div>
+            <div id="bfValue" class="text-base font-black text-emerald-400">0 (Balanced)</div>
+          </div>
+          <!-- Gauge -->
+          <div class="relative w-14 h-8 bg-slate-800 rounded-t-full border border-slate-700 overflow-hidden flex items-end justify-center">
+            <div id="gaugeGradient" class="absolute inset-0 bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 opacity-70"></div>
+            <div id="gaugeNeedle" class="w-1 h-7 bg-white rounded-full origin-bottom transform transition-all duration-700" style="transform: rotate(0deg);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Stage Visual Area -->
+      <div id="stageContent" class="relative w-full flex-1 flex items-center justify-center">
+        <!-- Rendered dynamically by javascript -->
+      </div>
+
+      <!-- Bottom Educational Caption / Voiceover Subtitle -->
+      <div class="z-20 bg-slate-950/80 border border-slate-800 rounded-xl px-5 py-3 shadow-lg flex items-center justify-between gap-4 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+          <div id="sfxIndicator" class="text-xl animate-bounce">✨</div>
+          <p id="sceneNarrative" class="text-xs md:text-sm text-slate-200 font-medium leading-relaxed">
+            In an AVL Tree, every node keeps its balance factor strictly between -1, 0, and +1!
+          </p>
+        </div>
+        <div id="soundBadge" class="hidden sm:inline-flex px-2.5 py-1 rounded-lg bg-sky-950 text-sky-300 border border-sky-800 text-[11px] font-mono font-bold">
+          SFX: CHIME
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Stepper Navigation Thumbnails -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between text-xs text-slate-400 font-semibold px-1">
+        <span>Story Timeline</span>
+        <span id="pageCounter">Page 1 of 10</span>
+      </div>
+
+      <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+        <button onclick="goToScene(1)" class="step-btn py-2 px-1 text-center rounded-xl bg-sky-600 text-white font-black text-xs shadow-md shadow-sky-600/30 transition border border-sky-400/30">1</button>
+        <button onclick="goToScene(2)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">2</button>
+        <button onclick="goToScene(3)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">3</button>
+        <button onclick="goToScene(4)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">4</button>
+        <button onclick="goToScene(5)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">5</button>
+        <button onclick="goToScene(6)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">6</button>
+        <button onclick="goToScene(7)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">7</button>
+        <button onclick="goToScene(8)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">8</button>
+        <button onclick="goToScene(9)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">9</button>
+        <button onclick="goToScene(10)" class="step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">10</button>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="prevScene()" id="prevBtn" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+          ◀ Previous Scene
+        </button>
+
+        <!-- Quick Rotation Cheat Sheet -->
+        <div class="hidden md:flex items-center gap-4 text-xs font-medium text-slate-400 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800">
+          <span class="text-sky-400 font-bold">Rotations:</span>
+          <span><b class="text-white">RR</b> = Left</span>
+          <span><b class="text-white">LL</b> = Right</span>
+          <span><b class="text-white">LR</b> = Left-Right</span>
+          <span><b class="text-white">RL</b> = Right-Left</span>
+        </div>
+
+        <button onclick="nextScene()" id="nextBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition flex items-center gap-2">
+          Next Scene ▶
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Procedural Web Audio API Sound Engine -->
+  <script>
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundIcon').innerText = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('soundLabel').innerText = soundEnabled ? 'Sound FX: ON' : 'Sound FX: OFF';
+    }
+
+    // Procedural Sound Effects (Pop, Boing, Alarm Beep, Whoosh, Success Chime)
+    function playSfx(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'POP') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'BOING') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(320, now + 0.12);
+          osc.frequency.linearRampToValueAtTime(240, now + 0.22);
+          osc.frequency.linearRampToValueAtTime(300, now + 0.32);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'BEEP') {
+          [0, 0.15].forEach(delay => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(750, now + delay);
+            gain.gain.setValueAtTime(0.2, now + delay);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.09);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + delay);
+            osc.stop(now + delay + 0.09);
+          });
+        } else if (type === 'ALERT') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(950, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.25);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'WHOOSH') {
+          // Filtered noise for smooth rotation whoosh
+          const bufferSize = ctx.sampleRate * 0.4;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(200, now);
+          filter.frequency.exponentialRampToValueAtTime(1400, now + 0.2);
+          filter.frequency.exponentialRampToValueAtTime(250, now + 0.4);
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.01, now);
+          gain.gain.linearRampToValueAtTime(0.4, now + 0.18);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+          noise.start(now);
+          noise.stop(now + 0.4);
+        } else if (type === 'SUCCESS' || type === 'CHIME') {
+          // Multi-chord chime (Ding ding ding!)
+          const chord = [523.25, 659.25, 783.99, 1046.50]; // C Major
+          chord.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.3, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.7);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.7);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+  </script>
+
+  <!-- Storyboard Scenes Engine -->
+  <script>
+    let currentScene = 1;
+    let autoplayInterval = null;
+
+    const scenes = [
+      // 1. Page 1: Root Node 30 with crown bouncing, full balanced tree
+      {
+        page: 1,
+        title: "AVL Tree: Always Balanced",
+        sfx: "CHIME",
+        sfxLabel: "SFX: SUCCESS CHIME",
+        bfText: "0 (Balanced)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 0,
+        narrative: "Page 1: In an AVL tree, every node is self-balancing! Left Height = 3, Right Height = 3. Balance Factor = 0. Faster search & better performance!",
+        render: () => `
+          <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <!-- Left Balance Scale Widget -->
+            <div class="absolute left-6 top-8 bg-slate-900/90 border border-slate-700/60 p-3 rounded-2xl shadow-xl flex items-center gap-3">
+              <div class="text-3xl animate-bounce">⚖️</div>
+              <div>
+                <div class="text-[11px] font-bold text-sky-400 uppercase">Left Height = 3</div>
+                <div class="text-xs font-black text-emerald-400">Balance Factor = 0</div>
+              </div>
+            </div>
+
+            <!-- Right Balance Scale Widget -->
+            <div class="absolute right-6 top-8 bg-slate-900/90 border border-slate-700/60 p-3 rounded-2xl shadow-xl flex items-center gap-3">
+              <div>
+                <div class="text-[11px] font-bold text-sky-400 uppercase">Right Height = 3</div>
+                <div class="text-xs font-black text-emerald-400">Balance Factor = 0</div>
+              </div>
+              <div class="text-3xl animate-bounce" style="animation-delay: 0.3s;">⚖️</div>
+            </div>
+
+            <!-- Root Node 30 with Crown and Cool Sunglasses -->
+            <div class="flex flex-col items-center bounce-gentle">
+              <div class="relative w-28 h-28 pixar-node">
+                <!-- Crown -->
+                <div class="absolute -top-7 text-3xl crown-wiggle">👑</div>
+                <!-- Sunglasses -->
+                <div class="sunglasses">
+                  <div class="sg-lens"></div>
+                  <div class="sg-bridge"></div>
+                  <div class="sg-lens"></div>
+                </div>
+                <!-- Mouth -->
+                <div class="mouth-smug mt-8"></div>
+                <!-- Value -->
+                <span class="text-2xl font-black text-white mt-1 drop-shadow">30</span>
+              </div>
+              <span class="mt-2 px-3 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-xs font-black border border-sky-400/30">
+                Root Node
+              </span>
+            </div>
+
+            <!-- Subtree Preview Branches -->
+            <div class="mt-6 flex items-center gap-24">
+              <div class="flex flex-col items-center pop-in" style="animation-delay: 0.2s;">
+                <div class="w-16 h-16 pixar-node">
+                  <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                  <div class="mouth-happy"></div>
+                  <span class="text-lg font-black text-white">20</span>
+                </div>
+              </div>
+              <div class="flex flex-col items-center pop-in" style="animation-delay: 0.3s;">
+                <div class="w-16 h-16 pixar-node">
+                  <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                  <div class="mouth-happy"></div>
+                  <span class="text-lg font-black text-white">40</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Sticker Banner -->
+            <div class="absolute bottom-1 bg-emerald-500/10 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold text-emerald-300 flex items-center gap-2">
+              <span>✅ Perfectly Balanced! For every node: BF ∈ {-1, 0, +1}</span>
+            </div>
+          </div>
+        `
+      },
+
+      // 2. Page 2: Node 10 pops into view, small bounce, crown wiggle
+      {
+        page: 2,
+        title: "AVL Node: Small Node, Big Job!",
+        sfx: "POP",
+        sfxLabel: "SFX: POP!",
+        bfText: "0 (Balanced)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 0,
+        narrative: "Page 2: Node 10 pops into view wearing its crown! Left Subtree = 0, Right Subtree = 0. Balance Factor = 0. Perfectly balanced alone!",
+        render: () => `
+          <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <div class="flex flex-col items-center pop-in">
+              <!-- Big Single Node 10 -->
+              <div class="relative w-36 h-36 pixar-node shadow-2xl">
+                <!-- Crown -->
+                <div class="absolute -top-9 text-4xl crown-wiggle">👑</div>
+                <!-- Cute Big Eyes -->
+                <div class="flex gap-4 mt-2">
+                  <div class="eye w-5 h-6"><div class="pupil w-3 h-4"></div></div>
+                  <div class="eye w-5 h-6"><div class="pupil w-3 h-4"></div></div>
+                </div>
+                <!-- Cheerful Mouth -->
+                <div class="mouth-happy w-6 h-3"></div>
+                <!-- Number -->
+                <span class="text-4xl font-black text-white mt-2 drop-shadow">10</span>
+              </div>
+
+              <!-- Indicator pill -->
+              <div class="mt-6 flex items-center gap-3">
+                <span class="px-3 py-1 rounded-xl bg-slate-800 text-sky-300 text-xs font-bold border border-slate-700">Left Height = 0</span>
+                <span class="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-sm font-extrabold border border-emerald-500/40 shadow-sm animate-pulse">
+                  Balance Factor = 0
+                </span>
+                <span class="px-3 py-1 rounded-xl bg-slate-800 text-sky-300 text-xs font-bold border border-slate-700">Right Height = 0</span>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // 3. Page 3: Node 20 slides into position, both nodes look at each other
+      {
+        page: 3,
+        title: "Node 20 Slides In (Right Child)",
+        sfx: "BOING",
+        sfxLabel: "SFX: BOING!",
+        bfText: "-1 (Balanced)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 25,
+        narrative: "Page 3: Node 20 slides into position to the right! Both nodes smile at each other. Left height = 0, Right height = 1. Balance factor = -1. Still in safe green range!",
+        render: () => `
+          <div class="relative w-full h-full flex items-center justify-center">
+            <!-- Branch line -->
+            <div class="branch-line w-40" style="top: 140px; left: 345px; transform: rotate(38deg);"></div>
+
+            <!-- Parent Node 10 -->
+            <div class="absolute" style="top: 80px; left: 300px;">
+              <div class="w-24 h-24 pixar-node bounce-gentle">
+                <div class="flex gap-2">
+                  <div class="eye"><div class="pupil" style="left: 6px; top: 5px;"></div></div>
+                  <div class="eye"><div class="pupil" style="left: 6px; top: 5px;"></div></div>
+                </div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">10</span>
+              </div>
+            </div>
+
+            <!-- Child Node 20 sliding in -->
+            <div class="absolute pop-in" style="top: 200px; left: 450px;">
+              <div class="w-24 h-24 pixar-node celebrate">
+                <div class="flex gap-2">
+                  <div class="eye"><div class="pupil" style="left: 1px; top: 1px;"></div></div>
+                  <div class="eye"><div class="pupil" style="left: 1px; top: 1px;"></div></div>
+                </div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">20</span>
+              </div>
+            </div>
+
+            <!-- Balanced indicator badge -->
+            <div class="absolute right-12 top-16 bg-emerald-500/20 border border-emerald-500/40 p-4 rounded-2xl flex items-center gap-3 shadow-lg">
+              <span class="text-3xl">🎯</span>
+              <div>
+                <div class="text-xs font-bold text-slate-300">Status</div>
+                <div class="text-sm font-extrabold text-emerald-400">Green & Balanced!</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // 4. Page 4: Node 30 drops into the tree, root becomes worried, yellow warning light
+      {
+        page: 4,
+        title: "Node 30 Drops In! Right-Skewed Warning",
+        sfx: "ALERT",
+        sfxLabel: "SFX: WARNING BEEP!",
+        bfText: "-2 (Caution)",
+        bfColor: "text-amber-400",
+        gaugeAngle: 60,
+        narrative: "Page 4: Node 30 drops down! The tree is now right-skewed (10 -> 20 -> 30). Root node 10 starts to sweat! Warning lamp flashes yellow!",
+        render: () => `
+          <div class="relative w-full h-full flex items-center justify-center">
+            <!-- Connecting Branches -->
+            <div class="branch-line w-36" style="top: 105px; left: 275px; transform: rotate(38deg);"></div>
+            <div class="branch-line w-36" style="top: 205px; left: 395px; transform: rotate(38deg);"></div>
+
+            <!-- Node 10 Worried with Warning Lamp -->
+            <div class="absolute" style="top: 40px; left: 230px;">
+              <!-- Yellow Flashing Warning Light -->
+              <div class="absolute -top-7 left-7 text-2xl alarm-blink">🚨</div>
+              <div class="w-24 h-24 pixar-node">
+                <!-- Sweat Drop -->
+                <div class="absolute top-2 right-2 text-sky-200 text-sm sweat-anim">💧</div>
+                <div class="flex gap-2">
+                  <div class="eye"><div class="pupil" style="top: 6px;"></div></div>
+                  <div class="eye"><div class="pupil" style="top: 6px;"></div></div>
+                </div>
+                <div class="mouth-worried"></div>
+                <span class="text-xl font-black text-white mt-1">10</span>
+              </div>
+              <div class="text-[11px] font-bold text-amber-400 text-center mt-1">Right Skewed!</div>
+            </div>
+
+            <!-- Node 20 -->
+            <div class="absolute" style="top: 145px; left: 350px;">
+              <div class="w-24 h-24 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">20</span>
+              </div>
+            </div>
+
+            <!-- Node 30 Dropping in -->
+            <div class="absolute drop-in" style="top: 250px; left: 470px;">
+              <div class="w-24 h-24 pixar-node shadow-2xl">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">30</span>
+              </div>
+            </div>
+
+            <!-- Status Box -->
+            <div class="absolute right-8 top-12 bg-amber-500/20 border border-amber-500/40 p-4 rounded-2xl flex items-center gap-3">
+              <span class="text-2xl animate-spin">⚠️</span>
+              <div>
+                <div class="text-xs font-bold text-slate-300">Tree Balance</div>
+                <div class="text-sm font-black text-amber-400">Imbalance Detected!</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // 5. Page 5: Alarm activates, Node 10 shakes in panic, BF = -2 glows red
+      {
+        page: 5,
+        title: "CRITICAL: Balance Factor = -2 (Right-Right Heavy!)",
+        sfx: "BEEP",
+        sfxLabel: "SFX: BEEP BEEP ALARM!",
+        bfText: "-2 (CRITICAL IMBALANCE)",
+        bfColor: "text-red-500",
+        gaugeAngle: 90,
+        narrative: "Page 5: Full alarm activates! Node 10 shakes in terror with sweat drops flying! Left height = 0, Right height = 2. Balance factor is -2. Rebalance is strictly needed!",
+        render: () => `
+          <div class="relative w-full h-full flex items-center justify-center">
+            <!-- Connecting Branches -->
+            <div class="branch-line w-36" style="top: 105px; left: 275px; transform: rotate(38deg);"></div>
+            <div class="branch-line w-36" style="top: 205px; left: 395px; transform: rotate(38deg);"></div>
+
+            <!-- Node 10 in FULL PANIC -->
+            <div class="absolute shaking" style="top: 35px; left: 230px;">
+              <!-- Red Siren Light -->
+              <div class="absolute -top-9 left-6 text-3xl alarm-blink">🚨</div>
+              <!-- Multiple Flying Sweat Drops -->
+              <div class="absolute -top-2 -left-2 text-sky-300 text-lg sweat-anim">💧</div>
+              <div class="absolute top-2 -right-3 text-sky-300 text-lg sweat-anim" style="animation-delay: 0.4s;">💧</div>
+              
+              <div class="w-26 h-26 pixar-node shadow-2xl border-4 border-red-500/80">
+                <div class="flex gap-2">
+                  <div class="eye w-5 h-6"><div class="pupil w-4 h-4 bg-red-950"></div></div>
+                  <div class="eye w-5 h-6"><div class="pupil w-4 h-4 bg-red-950"></div></div>
+                </div>
+                <div class="mouth-scared"></div>
+                <span class="text-2xl font-black text-white mt-1">10</span>
+              </div>
+              <div class="bg-red-600/90 text-white text-[11px] font-black px-2 py-0.5 rounded-full text-center mt-2 shadow-lg animate-pulse">
+                Rebalance Needed!
+              </div>
+            </div>
+
+            <!-- Node 20 Worried -->
+            <div class="absolute" style="top: 145px; left: 350px;">
+              <div class="w-24 h-24 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-worried"></div>
+                <span class="text-xl font-black text-white mt-1">20</span>
+              </div>
+              <span class="text-xs font-bold text-red-400 absolute -right-24 top-6">Right-Right Heavy! ↙</span>
+            </div>
+
+            <!-- Node 30 -->
+            <div class="absolute" style="top: 250px; left: 470px;">
+              <div class="w-24 h-24 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">30</span>
+              </div>
+            </div>
+
+            <!-- Imbalance Danger Widget -->
+            <div class="absolute right-8 top-12 bg-red-600/20 border border-red-500 p-4 rounded-2xl flex items-center gap-3 shadow-xl">
+              <span class="text-3xl animate-bounce">🚨</span>
+              <div>
+                <div class="text-xs font-bold text-slate-300">Balance Factor</div>
+                <div class="text-2xl font-black text-red-500">-2</div>
+                <div class="text-[10px] text-red-300 font-bold uppercase">Exceeds ±1 Limit!</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // 6. Page 6: RR Rotation executed! Left rotation arrow glows, nodes rotate smoothly, whoosh!
+      {
+        page: 6,
+        title: "RR ROTATION (Left Rotation) Fixes Everything!",
+        sfx: "WHOOSH",
+        sfxLabel: "SFX: WHOOSH ROTATION!",
+        bfText: "0 (Perfect Balance)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 0,
+        narrative: "Page 6: Solution: LEFT ROTATION! Node 20 rises up to become the new parent! Node 10 becomes the left child, Node 30 becomes the right child. Balanced tree = Healthy tree!",
+        render: () => `
+          <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <!-- Big Banner -->
+            <div class="absolute top-2 bg-gradient-to-r from-amber-500/20 to-sky-500/20 border border-amber-400/40 px-5 py-1.5 rounded-full text-center">
+              <span class="text-sm font-black text-amber-300 tracking-wide">↺ LEFT ROTATION ON NODE 10 ↺</span>
+            </div>
+
+            <!-- Balanced Pyramidal Tree Layout with celebratory animations -->
+            <div class="relative mt-6 flex flex-col items-center">
+              <!-- New Root: Node 20 -->
+              <div class="pop-in flex flex-col items-center">
+                <div class="w-28 h-28 pixar-node border-4 border-emerald-400 shadow-2xl celebrate">
+                  <div class="absolute -top-7 text-3xl crown-wiggle">👑</div>
+                  <div class="flex gap-2">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                  </div>
+                  <div class="mouth-happy"></div>
+                  <span class="text-2xl font-black text-white mt-1">20</span>
+                </div>
+                <span class="mt-1 px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black border border-emerald-500/30">
+                  New Balanced Root!
+                </span>
+              </div>
+
+              <!-- Connecting branches -->
+              <div class="branch-line w-36" style="top: 75px; left: 160px; transform: rotate(-35deg);"></div>
+              <div class="branch-line w-36" style="top: 75px; right: 160px; transform: rotate(35deg);"></div>
+
+              <!-- Children Row: 10 (Left) and 30 (Right) -->
+              <div class="mt-8 flex items-center gap-48">
+                <!-- Left Child 10 (Now Relieved and Smiling) -->
+                <div class="flex flex-col items-center pop-in" style="animation-delay: 0.2s;">
+                  <div class="w-22 h-22 pixar-node">
+                    <div class="flex gap-2">
+                      <div class="eye"><div class="pupil"></div></div>
+                      <div class="eye"><div class="pupil"></div></div>
+                    </div>
+                    <div class="mouth-happy"></div>
+                    <span class="text-xl font-black text-white mt-1">10</span>
+                  </div>
+                  <span class="text-[11px] font-bold text-sky-400 mt-1">Left Child</span>
+                </div>
+
+                <!-- Right Child 30 -->
+                <div class="flex flex-col items-center pop-in" style="animation-delay: 0.3s;">
+                  <div class="w-22 h-22 pixar-node">
+                    <div class="flex gap-2">
+                      <div class="eye"><div class="pupil"></div></div>
+                      <div class="eye"><div class="pupil"></div></div>
+                    </div>
+                    <div class="mouth-happy"></div>
+                    <span class="text-xl font-black text-white mt-1">30</span>
+                  </div>
+                  <span class="text-[11px] font-bold text-sky-400 mt-1">Right Child</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Formula Box -->
+            <div class="absolute bottom-1 bg-slate-900/90 border border-slate-700 px-5 py-2 rounded-xl text-xs flex items-center gap-4 shadow-lg">
+              <span class="text-amber-400 font-bold">Why? Insertion in right subtree of right child.</span>
+              <span class="text-emerald-400 font-bold">Solution: Left Rotation</span>
+              <span class="text-sky-300 font-bold">Result: BF = 0 (Healthy Tree!)</span>
+            </div>
+          </div>
+        `
+      },
+
+      // 7. Page 7: Node 40 pops into view, balanced meter stays green
+      {
+        page: 7,
+        title: "Node 40 Inserted: Still Balanced!",
+        sfx: "POP",
+        sfxLabel: "SFX: POP!",
+        bfText: "-1 (Safe)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 20,
+        narrative: "Page 7: Node 40 joins under Node 30! The tree checks itself: Left height = 1, Right height = 2. Difference is only 1. Still balanced! Nice job!",
+        render: () => `
+          <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <!-- Root 20 -->
+            <div class="flex flex-col items-center bounce-gentle">
+              <div class="w-24 h-24 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-xl font-black text-white mt-1">20</span>
+              </div>
+            </div>
+
+            <!-- Level 2 Nodes -->
+            <div class="mt-6 flex items-center gap-44">
+              <!-- Node 10 -->
+              <div class="w-20 h-20 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-lg font-black text-white mt-1">10</span>
+              </div>
+
+              <!-- Node 30 with Child 40 -->
+              <div class="relative flex flex-col items-center">
+                <div class="w-20 h-20 pixar-node">
+                  <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                  <div class="mouth-happy"></div>
+                  <span class="text-lg font-black text-white mt-1">30</span>
+                </div>
+
+                <!-- Node 40 popping in under 30 -->
+                <div class="absolute top-24 left-16 pop-in">
+                  <div class="w-18 h-18 pixar-node border-2 border-emerald-400 shadow-xl celebrate">
+                    <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                    <div class="mouth-happy"></div>
+                    <span class="text-base font-black text-white mt-1">40</span>
+                  </div>
+                  <span class="text-[10px] font-extrabold text-emerald-400 block text-center mt-1">New Node 40!</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Green Pill -->
+            <div class="absolute right-8 top-10 bg-emerald-500/20 border border-emerald-500/40 px-4 py-2 rounded-2xl flex items-center gap-3">
+              <span class="text-2xl">🎉</span>
+              <div>
+                <div class="text-xs font-bold text-slate-300">Tree Condition</div>
+                <div class="text-sm font-black text-emerald-400">Still Balanced! (BF = -1)</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // 8. Page 8: Node 50 appears, balance meter turns red, Node 20 looks annoyed
+      {
+        page: 8,
+        title: "The Right Side is Growing Again! Node 50 Enters",
+        sfx: "ALERT",
+        sfxLabel: "SFX: WARNING ALARM!",
+        bfText: "-2 (Approaching Danger)",
+        bfColor: "text-red-500",
+        gaugeAngle: 85,
+        narrative: "Page 8: Seriously? Again?! Node 50 is inserted to the right of 40! The right chain gets too tall. Root Node 20 rolls its eyes in annoyance as the alarm triggers again!",
+        render: () => `
+          <div class="relative w-full h-full flex items-center justify-center">
+            <!-- Node 20 ANNOYED -->
+            <div class="absolute" style="top: 40px; left: 240px;">
+              <div class="absolute -top-7 left-6 text-2xl alarm-blink">🚨</div>
+              <div class="w-24 h-24 pixar-node border-2 border-amber-500">
+                <div class="flex gap-2">
+                  <div class="eye"><div class="pupil" style="top: 2px;"></div></div>
+                  <div class="eye"><div class="pupil" style="top: 2px;"></div></div>
+                </div>
+                <div class="mouth-annoyed"></div>
+                <span class="text-xl font-black text-white mt-1">20</span>
+              </div>
+              <div class="bg-amber-500/20 text-amber-300 text-[11px] font-bold px-3 py-1 rounded-full text-center mt-1 border border-amber-500/40">
+                "Seriously? Again?!" 😤
+              </div>
+            </div>
+
+            <!-- Node 10 -->
+            <div class="absolute" style="top: 150px; left: 160px;">
+              <div class="w-20 h-20 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-lg font-black text-white mt-1">10</span>
+              </div>
+            </div>
+
+            <!-- Node 30 -->
+            <div class="absolute" style="top: 130px; left: 350px;">
+              <div class="w-20 h-20 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-worried"></div>
+                <span class="text-lg font-black text-white mt-1">30</span>
+              </div>
+            </div>
+
+            <!-- Node 40 -->
+            <div class="absolute" style="top: 210px; left: 440px;">
+              <div class="w-20 h-20 pixar-node">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-worried"></div>
+                <span class="text-lg font-black text-white mt-1">40</span>
+              </div>
+            </div>
+
+            <!-- Node 50 entering and pushing chain -->
+            <div class="absolute pop-in" style="top: 290px; left: 530px;">
+              <div class="w-20 h-20 pixar-node border-2 border-red-500 shadow-2xl">
+                <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                <div class="mouth-happy"></div>
+                <span class="text-lg font-black text-white mt-1">50</span>
+              </div>
+              <span class="text-xs font-black text-red-400 block text-center mt-1 animate-pulse">Node 50 Added!</span>
+            </div>
+
+            <!-- Warning Callout Card -->
+            <div class="absolute right-6 top-10 bg-slate-900/90 border border-red-500/50 p-4 rounded-2xl w-60 shadow-xl">
+              <div class="flex items-center gap-2 text-red-400 font-black text-xs uppercase mb-1">
+                <span>⚡ Danger Zone</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Inserted 50 to the right of 40. The right subtree height is now 3, left is 1. Difference = -2.
+              </p>
+            </div>
+          </div>
+        `
+      },
+
+      // 9. Page 9: Animate the PULL action! Node 20 pulls branch, smooth rotation, balanced!
+      {
+        page: 9,
+        title: "PULL ACTION! Self-Healing Left Rotation",
+        sfx: "WHOOSH",
+        sfxLabel: "SFX: WHOOSH & SUCCESS!",
+        bfText: "0 (Self-Healed)",
+        bfColor: "text-emerald-400",
+        gaugeAngle: 0,
+        narrative: "Page 9: PULL! Node 30 rises up as the new chief root! Nodes 20 and 40 become left and right children, with 10 and 50 as balanced leaves. Self-healing complete!",
+        render: () => `
+          <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <!-- Pull Action Header -->
+            <div class="absolute top-2 flex items-center gap-3 bg-blue-600/20 border border-blue-500/40 px-5 py-1 rounded-full">
+              <span class="text-xl">💪</span>
+              <span class="text-sm font-black text-sky-300">PULL ACTION: Left Rotation on Node 20!</span>
+            </div>
+
+            <!-- Balanced 5-Node Tree Pyramid -->
+            <div class="relative mt-8 flex flex-col items-center">
+              <!-- Root 30 -->
+              <div class="pop-in flex flex-col items-center">
+                <div class="w-24 h-24 pixar-node border-4 border-emerald-400 celebrate shadow-2xl">
+                  <div class="absolute -top-7 text-3xl crown-wiggle">👑</div>
+                  <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                  <div class="mouth-happy"></div>
+                  <span class="text-xl font-black text-white mt-1">30</span>
+                </div>
+              </div>
+
+              <!-- Connecting branches -->
+              <div class="branch-line w-36" style="top: 70px; left: 160px; transform: rotate(-35deg);"></div>
+              <div class="branch-line w-36" style="top: 70px; right: 160px; transform: rotate(35deg);"></div>
+
+              <!-- Level 2: 20 and 40 -->
+              <div class="mt-6 flex items-center gap-48">
+                <!-- Node 20 with child 10 -->
+                <div class="flex flex-col items-center pop-in" style="animation-delay: 0.15s;">
+                  <div class="w-20 h-20 pixar-node">
+                    <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                    <div class="mouth-happy"></div>
+                    <span class="text-lg font-black text-white mt-1">20</span>
+                  </div>
+                  <!-- Child 10 -->
+                  <div class="mt-4 w-16 h-16 pixar-node">
+                    <div class="flex gap-1.5"><div class="eye w-3 h-4"><div class="pupil w-2 h-2"></div></div><div class="eye w-3 h-4"><div class="pupil w-2 h-2"></div></div></div>
+                    <div class="mouth-happy w-3 h-1.5"></div>
+                    <span class="text-sm font-black text-white">10</span>
+                  </div>
+                </div>
+
+                <!-- Node 40 with child 50 -->
+                <div class="flex flex-col items-center pop-in" style="animation-delay: 0.25s;">
+                  <div class="w-20 h-20 pixar-node">
+                    <div class="flex gap-2"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+                    <div class="mouth-happy"></div>
+                    <span class="text-lg font-black text-white mt-1">40</span>
+                  </div>
+                  <!-- Child 50 -->
+                  <div class="mt-4 w-16 h-16 pixar-node">
+                    <div class="flex gap-1.5"><div class="eye w-3 h-4"><div class="pupil w-2 h-2"></div></div><div class="eye w-3 h-4"><div class="pupil w-2 h-2"></div></div></div>
+                    <div class="mouth-happy w-3 h-1.5"></div>
+                    <span class="text-sm font-black text-white">50</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Badge -->
+            <div class="absolute bottom-2 bg-emerald-500/20 border border-emerald-500/40 px-5 py-1 rounded-full text-xs font-bold text-emerald-300">
+              ✨ Self-Healing Trees = AVL Trees! No Manual Rotations Needed! ✨
+            </div>
+          </div>
+        `
+      },
+
+      // 10. Page 10: Side-by-side comparison: Drooping BST vs Cool Sunglasses AVL
+      {
+        page: 10,
+        title: "BST vs AVL: Same Nodes, Way Better Vibes!",
+        sfx: "SUCCESS",
+        sfxLabel: "SFX: CELEBRATION MUSIC!",
+        bfText: "O(log n) Speed!",
+        bfColor: "text-sky-300",
+        gaugeAngle: 0,
+        narrative: "Page 10: Look at the difference! An unbalanced BST droops down like a tall sad stick (Height = 5, slow search). An AVL Tree balances into a cool pyramid with sunglasses (Height = 3, lightning O(log n) search)!",
+        render: () => `
+          <div class="relative w-full h-full grid grid-cols-2 gap-6 items-center px-6">
+            <!-- Left: Sad Drooping BST -->
+            <div class="flex flex-col items-center bg-red-950/20 border border-red-500/30 rounded-2xl p-4 h-full justify-between">
+              <div class="text-center">
+                <span class="text-sm font-black text-red-400">Binary Search Tree (Unbalanced)</span>
+                <p class="text-[11px] text-slate-400">"So tall... so tired... my back hurts..."</p>
+              </div>
+
+              <!-- Sad Skewed Diagonal Chain -->
+              <div class="flex items-center gap-1.5 py-4">
+                <div class="w-10 h-10 pixar-node opacity-80"><span class="text-xs font-bold text-white">10</span></div>
+                <span class="text-slate-600 font-bold">↘</span>
+                <div class="w-10 h-10 pixar-node opacity-80"><span class="text-xs font-bold text-white">20</span></div>
+                <span class="text-slate-600 font-bold">↘</span>
+                <div class="w-10 h-10 pixar-node opacity-80"><span class="text-xs font-bold text-white">30</span></div>
+                <span class="text-slate-600 font-bold">↘</span>
+                <div class="w-10 h-10 pixar-node opacity-80"><span class="text-xs font-bold text-white">40</span></div>
+                <span class="text-slate-600 font-bold">↘</span>
+                <div class="w-10 h-10 pixar-node opacity-80"><span class="text-xs font-bold text-white">50</span></div>
+              </div>
+
+              <!-- Badges -->
+              <div class="flex gap-2 text-[10px] font-bold text-red-300">
+                <span class="bg-red-900/50 px-2 py-0.5 rounded-lg border border-red-700">❌ Height = 5</span>
+                <span class="bg-red-900/50 px-2 py-0.5 rounded-lg border border-red-700">❌ Slow O(n) Search</span>
+              </div>
+            </div>
+
+            <!-- Right: Cool Sunglasses AVL Tree -->
+            <div class="flex flex-col items-center bg-sky-950/20 border border-sky-400/40 rounded-2xl p-4 h-full justify-between shadow-2xl">
+              <div class="text-center">
+                <span class="text-sm font-black text-sky-300">AVL Tree (Self-Balanced)</span>
+                <p class="text-[11px] text-emerald-400 font-bold">"Balanced, Fast, Confident! 😎"</p>
+              </div>
+
+              <!-- Cool Balanced Tree with Sunglasses -->
+              <div class="flex flex-col items-center bounce-gentle py-2">
+                <!-- Root with shades -->
+                <div class="relative w-18 h-18 pixar-node border-2 border-sky-300 shadow-xl">
+                  <div class="sunglasses scale-75 -top-1">
+                    <div class="sg-lens"></div><div class="sg-bridge"></div><div class="sg-lens"></div>
+                  </div>
+                  <div class="mouth-smug mt-6"></div>
+                  <span class="text-base font-black text-white">30</span>
+                </div>
+
+                <!-- Children with shades -->
+                <div class="flex gap-16 mt-3">
+                  <div class="relative w-14 h-14 pixar-node">
+                    <div class="sunglasses scale-50 -top-2">
+                      <div class="sg-lens"></div><div class="sg-bridge"></div><div class="sg-lens"></div>
+                    </div>
+                    <div class="mouth-smug mt-4"></div>
+                    <span class="text-xs font-black text-white">20</span>
+                  </div>
+                  <div class="relative w-14 h-14 pixar-node">
+                    <div class="sunglasses scale-50 -top-2">
+                      <div class="sg-lens"></div><div class="sg-bridge"></div><div class="sg-lens"></div>
+                    </div>
+                    <div class="mouth-smug mt-4"></div>
+                    <span class="text-xs font-black text-white">40</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Badges -->
+              <div class="flex gap-2 text-[10px] font-bold text-emerald-300">
+                <span class="bg-emerald-900/50 px-2 py-0.5 rounded-lg border border-emerald-700">✅ Height = 3</span>
+                <span class="bg-emerald-900/50 px-2 py-0.5 rounded-lg border border-emerald-700">✅ Lightning O(log n)</span>
+                <span class="bg-sky-900/50 px-2 py-0.5 rounded-lg border border-sky-700">✨ Better Vibes!</span>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    function renderScene(sceneNum) {
+      const s = scenes[sceneNum - 1];
+      document.getElementById('sceneBadge').innerText = `Scene ${s.page} / 10`;
+      document.getElementById('sceneTitle').innerText = s.title;
+      document.getElementById('sceneNarrative').innerText = s.narrative;
+      document.getElementById('soundBadge').innerText = s.sfxLabel;
+      document.getElementById('pageCounter').innerText = `Page ${s.page} of 10`;
+
+      // Live Balance Gauge Needle
+      const needle = document.getElementById('gaugeNeedle');
+      needle.style.transform = `rotate(${s.gaugeAngle}deg)`;
+      const bfVal = document.getElementById('bfValue');
+      bfVal.innerText = s.bfText;
+      bfVal.className = `text-base font-black ${s.bfColor}`;
+
+      // Render Stage Content
+      const stage = document.getElementById('stageContent');
+      stage.innerHTML = s.render();
+
+      // Trigger SFX
+      playSfx(s.sfx);
+
+      // Update Step Buttons styling
+      const buttons = document.querySelectorAll('.step-btn');
+      buttons.forEach((btn, idx) => {
+        if (idx + 1 === sceneNum) {
+          btn.className = 'step-btn py-2 px-1 text-center rounded-xl bg-sky-600 text-white font-black text-xs shadow-md shadow-sky-600/30 transition border border-sky-400/30 scale-105';
+        } else {
+          btn.className = 'step-btn py-2 px-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700';
+        }
+      });
+
+      // Update Prev / Next Buttons
+      document.getElementById('prevBtn').disabled = (sceneNum === 1);
+      document.getElementById('prevBtn').style.opacity = (sceneNum === 1) ? '0.4' : '1';
+
+      if (sceneNum === 10) {
+        document.getElementById('nextBtn').innerText = 'Replay Story ↺';
+      } else {
+        document.getElementById('nextBtn').innerText = 'Next Scene ▶';
+      }
+    }
+
+    function goToScene(num) {
+      currentScene = num;
+      renderScene(currentScene);
+    }
+
+    function nextScene() {
+      if (currentScene >= 10) {
+        currentScene = 1;
+      } else {
+        currentScene++;
+      }
+      renderScene(currentScene);
+    }
+
+    function prevScene() {
+      if (currentScene > 1) {
+        currentScene--;
+        renderScene(currentScene);
+      }
+    }
+
+    function toggleAutoPlay() {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+        document.getElementById('autoIcon').innerText = '▶';
+        document.getElementById('autoLabel').innerText = 'Auto Story';
+        document.getElementById('autoplayBtn').className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md shadow-blue-600/30 transition';
+      } else {
+        document.getElementById('autoIcon').innerText = '⏸';
+        document.getElementById('autoLabel').innerText = 'Pause Auto';
+        document.getElementById('autoplayBtn').className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white shadow-md shadow-amber-600/30 transition';
+        autoplayInterval = setInterval(() => {
+          nextScene();
+        }, 4200);
+      }
+    }
+
+    // Keyboard Shortcuts (Arrow Keys & Space)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextScene();
+      } else if (e.key === 'ArrowLeft') {
+        prevScene();
+      }
+    });
+
+    // Initial Render
+    renderScene(1);
+  </script>
+</body>
+</html>

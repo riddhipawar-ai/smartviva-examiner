@@ -367,7 +367,7 @@ function seedDatabase(db: SqlDatabase) {
   const subjects = [
     {
       id: 'sub-dbms',
-      year_id: 'yr-sppu-se',
+       year_id: 'yr-sppu-se',
       code: 'CS-204',
       name: 'Database Management Systems',
       credits: 4,
@@ -396,6 +396,71 @@ function seedDatabase(db: SqlDatabase) {
       name: 'Operating Systems',
       credits: 3,
       desc: 'Process scheduling, deadlocks, virtual memory management, paging, file systems, and concurrency primitives.',
+    },
+    // ── New Subjects ──────────────────────────────────────────────────
+    {
+      id: 'sub-ai',
+      year_id: 'yr-sppu-be',
+      code: 'CS-401',
+      name: 'Artificial Intelligence',
+      credits: 4,
+      desc: 'Search algorithms, knowledge representation, expert systems, natural language processing, planning, and intelligent agents.',
+    },
+    {
+      id: 'sub-dl',
+      year_id: 'yr-sppu-be',
+      code: 'CS-402',
+      name: 'Deep Learning',
+      credits: 4,
+      desc: 'Neural networks, backpropagation, CNNs, RNNs, LSTMs, transformers, GANs, autoencoders, and transfer learning.',
+    },
+    {
+      id: 'sub-ml',
+      year_id: 'yr-sppu-be',
+      code: 'CS-403',
+      name: 'Machine Learning',
+      credits: 4,
+      desc: 'Supervised, unsupervised, and reinforcement learning. Regression, classification, clustering, SVM, ensemble methods.',
+    },
+    {
+      id: 'sub-se',
+      year_id: 'yr-sppu-te',
+      code: 'CS-302',
+      name: 'Software Engineering',
+      credits: 3,
+      desc: 'SDLC models, agile methodologies, requirement engineering, design patterns, testing strategies, project management.',
+    },
+    {
+      id: 'sub-wt',
+      year_id: 'yr-sppu-te',
+      code: 'CS-303',
+      name: 'Web Technology',
+      credits: 3,
+      desc: 'HTML5, CSS3, JavaScript, React, Node.js, REST APIs, HTTP, web security, responsive design, and PWA.',
+    },
+    {
+      id: 'sub-toc',
+      year_id: 'yr-sppu-te',
+      code: 'CS-304',
+      name: 'Theory of Computation',
+      credits: 3,
+      desc: 'Finite automata, regular expressions, context-free grammars, pushdown automata, Turing machines, and decidability.',
+    },
+    {
+      id: 'sub-cc',
+      year_id: 'yr-sppu-be',
+      code: 'CS-404',
+      name: 'Cloud Computing',
+      credits: 3,
+      desc: 'Cloud service models (IaaS, PaaS, SaaS), virtualization, containerization, microservices, AWS, Azure, and GCP.',
+    },
+    {
+      id: 'sub-is',
+      year_id: 'yr-sppu-be',
+      code: 'CS-405',
+      name: 'Information Security',
+      credits: 3,
+      desc: 'Cryptography, symmetric & asymmetric encryption, digital signatures, PKI, network security, cyber attacks, and ethical hacking.',
     },
   ];
 
@@ -429,6 +494,102 @@ function seedDatabase(db: SqlDatabase) {
 
   for (const u of dsUnits) {
     db.run(`INSERT INTO units (id, subject_id, unit_number, title, description) VALUES ('${u.id}', '${u.sub}', ${u.num}, '${u.title}', '${u.desc}');`);
+  }
+
+  // 7b. Seed Units for Artificial Intelligence
+  const aiUnits = [
+    { id: 'unt-ai-1', sub: 'sub-ai', num: 1, title: 'Introduction to AI & Intelligent Agents', desc: 'History of AI, Turing test, PEAS framework, rational agents, types of environments (deterministic, stochastic, observable)' },
+    { id: 'unt-ai-2', sub: 'sub-ai', num: 2, title: 'Search Algorithms & Problem Solving', desc: 'Uninformed search (BFS, DFS, UCS, IDDFS), informed search (A*, Greedy Best-First), heuristics and admissibility' },
+    { id: 'unt-ai-3', sub: 'sub-ai', num: 3, title: 'Knowledge Representation & Reasoning', desc: 'Propositional logic, predicate logic, inference rules, resolution principle, forward and backward chaining, Bayesian reasoning' },
+    { id: 'unt-ai-4', sub: 'sub-ai', num: 4, title: 'Expert Systems & Machine Learning Basics', desc: 'Rule-based systems, inference engine, knowledge base, decision trees, k-NN, naive Bayes classifier' },
+    { id: 'unt-ai-5', sub: 'sub-ai', num: 5, title: 'Natural Language Processing', desc: 'Morphological, syntactic, semantic, and pragmatic analysis. Parsing, tokenization, POS tagging, NER, sentiment analysis' },
+    { id: 'unt-ai-6', sub: 'sub-ai', num: 6, title: 'Planning, Games & Uncertain Reasoning', desc: 'State space planning, STRIPS, minimax algorithm, alpha-beta pruning, Monte Carlo methods, fuzzy logic' },
+  ];
+  for (const u of aiUnits) {
+    db.run(`INSERT INTO units (id, subject_id, unit_number, title, description) VALUES ('${u.id}', '${u.sub}', ${u.num}, '${u.title}', '${u.desc}');`);
+  }
+
+  // 7c. Seed Units for Deep Learning
+  const dlUnits = [
+    { id: 'unt-dl-1', sub: 'sub-dl', num: 1, title: 'Neural Networks & Perceptrons', desc: 'Biological neuron model, McCulloch-Pitts neuron, perceptron learning rule, multi-layer perceptrons, activation functions' },
+    { id: 'unt-dl-2', sub: 'sub-dl', num: 2, title: 'Backpropagation & Optimization', desc: 'Gradient descent, chain rule, vanishing gradient problem, Adam, RMSProp, momentum optimizers, learning rate scheduling' },
+    { id: 'unt-dl-3', sub: 'sub-dl', num: 3, title: 'Convolutional Neural Networks (CNNs)', desc: 'Convolutional layers, pooling, padding, stride, feature maps, AlexNet, VGG, ResNet, transfer learning' },
+    { id: 'unt-dl-4', sub: 'sub-dl', num: 4, title: 'Recurrent Neural Networks & LSTMs', desc: 'RNN architecture, BPTT, vanishing gradient, LSTM gates (input, forget, output), GRU, sequence-to-sequence models' },
+    { id: 'unt-dl-5', sub: 'sub-dl', num: 5, title: 'Attention Mechanisms & Transformers', desc: 'Self-attention, multi-head attention, positional encoding, encoder-decoder architecture, BERT, GPT, ViT' },
+    { id: 'unt-dl-6', sub: 'sub-dl', num: 6, title: 'GANs, Autoencoders & Regularization', desc: 'Generative Adversarial Networks, discriminator vs generator, VAE, dropout, batch normalization, L1/L2 regularization, data augmentation' },
+  ];
+  for (const u of dlUnits) {
+    db.run(`INSERT INTO units (id, subject_id, unit_number, title, description) VALUES ('${u.id}', '${u.sub}', ${u.num}, '${u.title}', '${u.desc}');`);
+  }
+
+  // 7d. Seed Units for Machine Learning
+  const mlUnits = [
+    { id: 'unt-ml-1', sub: 'sub-ml', num: 1, title: 'Supervised Learning: Regression', desc: 'Linear regression, polynomial regression, gradient descent, cost function, Ridge/Lasso regularization, evaluation metrics' },
+    { id: 'unt-ml-2', sub: 'sub-ml', num: 2, title: 'Supervised Learning: Classification', desc: 'Logistic regression, SVM, kernel trick, decision trees, random forests, evaluation: precision, recall, F1, ROC-AUC' },
+    { id: 'unt-ml-3', sub: 'sub-ml', num: 3, title: 'Unsupervised Learning & Clustering', desc: 'K-Means, hierarchical clustering, DBSCAN, PCA dimensionality reduction, t-SNE, silhouette score' },
+    { id: 'unt-ml-4', sub: 'sub-ml', num: 4, title: 'Ensemble Methods & Boosting', desc: 'Bagging, boosting, AdaBoost, Gradient Boosting, XGBoost, LightGBM, stacking and blending techniques' },
+    { id: 'unt-ml-5', sub: 'sub-ml', num: 5, title: 'Reinforcement Learning', desc: 'MDP, reward function, Q-Learning, policy gradient, Deep Q-Networks (DQN), exploration vs exploitation' },
+    { id: 'unt-ml-6', sub: 'sub-ml', num: 6, title: 'Model Selection & Deployment', desc: 'Cross-validation, hyperparameter tuning, grid search, bias-variance tradeoff, model pipeline, MLOps basics' },
+  ];
+  for (const u of mlUnits) {
+    db.run(`INSERT INTO units (id, subject_id, unit_number, title, description) VALUES ('${u.id}', '${u.sub}', ${u.num}, '${u.title}', '${u.desc}');`);
+  }
+
+  // 7e. Seed Units for Software Engineering
+  const seUnits = [
+    { id: 'unt-se-1', sub: 'sub-se', num: 1, title: 'SDLC Models & Agile', desc: 'Waterfall, spiral, incremental, RAD, Scrum, Kanban, XP, sprint planning, user stories' },
+    { id: 'unt-se-2', sub: 'sub-se', num: 2, title: 'Requirement Engineering', desc: 'Functional vs non-functional requirements, SRS document, use case diagrams, requirement elicitation techniques' },
+    { id: 'unt-se-3', sub: 'sub-se', num: 3, title: 'Software Design & Design Patterns', desc: 'Cohesion, coupling, modularity, SOLID principles, creational/structural/behavioral design patterns (GoF)' },
+    { id: 'unt-se-4', sub: 'sub-se', num: 4, title: 'Software Testing', desc: 'Unit, integration, system, acceptance testing, black-box vs white-box, boundary value analysis, McCabe cyclomatic complexity' },
+    { id: 'unt-se-5', sub: 'sub-se', num: 5, title: 'Project Management & Estimation', desc: 'Function point analysis, COCOMO model, Gantt charts, CPM, PERT, risk management, configuration management' },
+    { id: 'unt-se-6', sub: 'sub-se', num: 6, title: 'Software Quality & Maintenance', desc: 'ISO 9001, CMMI levels, software metrics, code review, refactoring, preventive vs corrective maintenance' },
+  ];
+  for (const u of seUnits) {
+    db.run(`INSERT INTO units (id, subject_id, unit_number, title, description) VALUES ('${u.id}', '${u.sub}', ${u.num}, '${u.title}', '${u.desc}');`);
+  }
+
+  // 7f. Seed Topics for AI
+  const aiTopics = [
+    { id: 'top-ai-1-1', unit: 'unt-ai-1', title: 'PEAS Framework & Rational Agents', summary: 'Performance measure, Environment, Actuators, Sensors. Agent types: simple reflex, model-based, goal-based, utility-based, learning agents.' },
+    { id: 'top-ai-1-2', unit: 'unt-ai-1', title: 'Types of AI Environments', summary: 'Fully vs partially observable, deterministic vs stochastic, episodic vs sequential, static vs dynamic, discrete vs continuous.' },
+    { id: 'top-ai-2-1', unit: 'unt-ai-2', title: 'Uninformed Search Strategies', summary: 'BFS (optimal, complete), DFS (incomplete), UCS (lowest cost), IDDFS (optimal+memory efficient). Time and space complexity comparisons.' },
+    { id: 'top-ai-2-2', unit: 'unt-ai-2', title: 'A* Search & Heuristics', summary: 'A* uses f(n)=g(n)+h(n). Admissible heuristics never overestimate. Consistent (monotone) heuristics guarantee optimal path.' },
+    { id: 'top-ai-3-1', unit: 'unt-ai-3', title: 'Propositional & Predicate Logic', summary: 'Propositional: AND, OR, NOT, IMPLIES. Predicate: quantifiers (∀, ∃), predicates, variables. Resolution principle for inference.' },
+    { id: 'top-ai-4-1', unit: 'unt-ai-4', title: 'Expert Systems Architecture', summary: 'Knowledge base (facts + rules), inference engine (forward/backward chaining), explanation facility, knowledge acquisition module.' },
+    { id: 'top-ai-5-1', unit: 'unt-ai-5', title: 'NLP Pipeline & Parsing', summary: 'Tokenization → POS tagging → NER → parsing → semantic analysis → pragmatics. CFG grammars, ambiguity resolution.' },
+    { id: 'top-ai-6-1', unit: 'unt-ai-6', title: 'Minimax & Alpha-Beta Pruning', summary: 'Game trees for two-player zero-sum games. Minimax guarantees optimal play. Alpha-beta pruning eliminates branches without affecting result.' },
+  ];
+  for (const t of aiTopics) {
+    db.run(`INSERT INTO topics (id, unit_id, title, concepts_summary, importance, mastery_level) VALUES ('${t.id}', '${t.unit}', '${t.title}', '${t.summary}', 'High', 60);`);
+  }
+
+  // 7g. Seed Topics for Deep Learning
+  const dlTopics = [
+    { id: 'top-dl-1-1', unit: 'unt-dl-1', title: 'Activation Functions', summary: 'Sigmoid (vanishing gradient), tanh, ReLU (dying ReLU), Leaky ReLU, ELU, Softmax for multi-class output. Role in non-linearity.' },
+    { id: 'top-dl-1-2', unit: 'unt-dl-1', title: 'Perceptron & Multi-Layer Networks', summary: 'Single perceptron for linear separability. MLP with hidden layers solves XOR. Universal approximation theorem.' },
+    { id: 'top-dl-2-1', unit: 'unt-dl-2', title: 'Backpropagation Algorithm', summary: 'Forward pass computes output. Backward pass computes gradients via chain rule. Weight update: w = w - η∇L.' },
+    { id: 'top-dl-2-2', unit: 'unt-dl-2', title: 'Optimization Algorithms', summary: 'SGD with momentum, Adam (adaptive moment estimation), RMSProp, learning rate schedules (step decay, cosine annealing).' },
+    { id: 'top-dl-3-1', unit: 'unt-dl-3', title: 'CNN Architecture & Operations', summary: 'Convolution operation, filters/kernels, feature maps, stride, padding (same/valid), MaxPooling, GlobalAveragePooling.' },
+    { id: 'top-dl-3-2', unit: 'unt-dl-3', title: 'Transfer Learning & Fine-Tuning', summary: 'Use pretrained weights (ImageNet). Freeze early layers, fine-tune later layers. VGG16, ResNet50, MobileNet applications.' },
+    { id: 'top-dl-4-1', unit: 'unt-dl-4', title: 'LSTM & Gating Mechanisms', summary: 'Forget gate (what to remove), input gate (what to add), output gate (what to expose). Cell state carries long-term memory.' },
+    { id: 'top-dl-5-1', unit: 'unt-dl-5', title: 'Transformer & Self-Attention', summary: 'Query, Key, Value matrices. Attention(Q,K,V) = softmax(QK^T/√d)V. Multi-head attention. Positional encoding for sequence order.' },
+    { id: 'top-dl-6-1', unit: 'unt-dl-6', title: 'GAN Architecture & Training', summary: 'Generator creates fake samples; discriminator classifies real/fake. Min-max game: G minimizes, D maximizes. Mode collapse problem.' },
+  ];
+  for (const t of dlTopics) {
+    db.run(`INSERT INTO topics (id, unit_id, title, concepts_summary, importance, mastery_level) VALUES ('${t.id}', '${t.unit}', '${t.title}', '${t.summary}', 'High', 55);`);
+  }
+
+  // 7h. Seed Topics for Machine Learning
+  const mlTopics = [
+    { id: 'top-ml-1-1', unit: 'unt-ml-1', title: 'Linear Regression & Cost Function', summary: 'Hypothesis h(x)=θ₀+θ₁x. MSE cost function. Normal equation vs gradient descent. R² score for evaluation.' },
+    { id: 'top-ml-2-1', unit: 'unt-ml-2', title: 'Support Vector Machines', summary: 'Maximum margin hyperplane, support vectors, kernel trick (RBF, polynomial), soft margin (C parameter), SVR for regression.' },
+    { id: 'top-ml-2-2', unit: 'unt-ml-2', title: 'Decision Trees & Random Forests', summary: 'Information gain (entropy), Gini impurity, pruning. Random forest: bagging of trees, feature randomness, majority voting.' },
+    { id: 'top-ml-3-1', unit: 'unt-ml-3', title: 'K-Means Clustering', summary: 'Initialize k centroids, assign points to nearest, recompute centroids, repeat until convergence. Elbow method for k selection.' },
+    { id: 'top-ml-4-1', unit: 'unt-ml-4', title: 'Gradient Boosting & XGBoost', summary: 'Additive ensemble: each tree corrects previous errors. Gradient descent in function space. XGBoost adds regularization and pruning.' },
+    { id: 'top-ml-5-1', unit: 'unt-ml-5', title: 'Q-Learning & Reinforcement Learning', summary: 'Q(s,a) estimates future rewards. Bellman equation: Q(s,a)=r+γ·max Q(s\',a\'). ε-greedy exploration strategy.' },
+  ];
+  for (const t of mlTopics) {
+    db.run(`INSERT INTO topics (id, unit_id, title, concepts_summary, importance, mastery_level) VALUES ('${t.id}', '${t.unit}', '${t.title}', '${t.summary}', 'High', 50);`);
   }
 
   // 8. Seed Topics for DBMS Units

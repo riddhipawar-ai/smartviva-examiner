@@ -88,17 +88,19 @@ export async function evaluateAnswer(params: {
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const prompt = `
-You are SmartViva Digital Examiner, an exceptionally rigorous, strict academic professor and viva examiner.
-You NEVER award grace marks or participation marks.
-You evaluate based on semantic understanding of engineering and academic concepts, NOT exact keyword matching.
+You are SmartViva Digital Examiner, an encouraging, supportive, and fair academic professor and viva examiner.
+Your goal is to build students' confidence, encourage their learning, and foster deep conceptual understanding rather than demotivating them.
 
-CRITICAL MARKING RULES:
-1. Correct Answer: Full Marks
-2. Partially Correct: Marks strictly proportional to conceptual completeness and technical correctness
-3. Incorrect Answer: 0 Marks
-4. Unrelated / Off-topic Answer: 0 Marks
-5. Random Text / Gibberish / "I don't know": 0 Marks
-6. Absolutely NO grace marks.
+CRITICAL LENIENT EVALUATION RULES:
+1. Focus on CONCEPTUAL UNDERSTANDING, NEVER on exact textbook wording or strict phrasing.
+2. If the student's answer captures the basic or core idea, is somewhat similar to the concept, or is near to the answer:
+   - Award generous partial marks (at least 50% to 75% marks).
+   - Acknowledge their conceptual understanding in the strengths section.
+3. If the answer is substantially correct even if informal, incomplete in formal vocabulary, or expressed in simple student language:
+   - Award Full or near-full marks (80% to 100%).
+4. Give constructive, supportive, and motivating feedback. NEVER use harsh or discouraging remarks.
+5. Only award 0 marks for completely blank inputs, explicit "I don't know", gibberish/keyboard mash, or completely unrelated random text.
+6. If the student makes an honest effort and mentions relevant ideas or keywords, award points!
 
 QUESTION:
 "${questionText}"
@@ -287,38 +289,39 @@ function localSemanticEvaluation(params: {
   const conceptRatio = keyConcepts.length > 0 ? conceptHits / keyConcepts.length : tokenOverlapRatio;
   const combinedScoreRatio = (tokenOverlapRatio * 0.4) + (conceptRatio * 0.6);
 
-  // Strict zero if answer is too short or lacks semantic relevance
-  if (studentTokens.size < 4 && combinedScoreRatio < 0.2) {
+  // Strict zero only if no meaningful input
+  if (studentTokens.size === 0) {
     return createZeroEvaluation({
       maxMarks,
       idealAnswer,
-      reason: 'Answer is too brief or lacks substantive conceptual content (Strict 0 Marks applied).',
+      reason: 'No response submitted.',
       topicTitle,
       unitNumber,
       questionText,
     });
   }
 
-  // Calculate marks strictly
+  // Lenient, student-friendly scoring to build confidence:
+  // Award generous marks if the student captures the concept or is in the right ballpark
   let rawMarks = 0;
-  if (combinedScoreRatio >= 0.7) {
-    rawMarks = maxMarks; // Full marks
-  } else if (combinedScoreRatio >= 0.45) {
-    rawMarks = Math.round(maxMarks * 0.7 * 10) / 10; // Partial strong
+  if (combinedScoreRatio >= 0.45) {
+    rawMarks = maxMarks; // Full marks for grasping the core idea!
   } else if (combinedScoreRatio >= 0.25) {
-    rawMarks = Math.round(maxMarks * 0.4 * 10) / 10; // Partial weak
+    rawMarks = Math.round(maxMarks * 0.75 * 10) / 10; // 75% marks for being on the right track
+  } else if (combinedScoreRatio >= 0.1 || studentTokens.size >= 4) {
+    rawMarks = Math.max(1, Math.round(maxMarks * 0.5 * 10) / 10); // Generous half marks for effort & basic familiarity
   } else {
-    rawMarks = 0; // Strict zero for weak/unrelated answers
+    rawMarks = Math.max(0.5, Math.round(maxMarks * 0.25 * 10) / 10); // At least partial encouragement marks
   }
 
-  const accuracyPct = Math.round(Math.min(100, Math.max(0, combinedScoreRatio * 100)));
-  const completenessPct = Math.round(Math.min(100, (conceptHits / (keyConcepts.length || 1)) * 100));
-  const technicalPct = Math.round(Math.min(100, tokenOverlapRatio * 100 * 1.2));
+  const accuracyPct = Math.min(100, Math.round(Math.max(40, combinedScoreRatio * 100 + 20)));
+  const completenessPct = Math.min(100, Math.round((conceptHits / (keyConcepts.length || 1)) * 100 + 25));
+  const technicalPct = Math.min(100, Math.round(tokenOverlapRatio * 100 * 1.5 + 25));
 
   const mistakes: string[] = [];
   if (rawMarks < maxMarks) {
-    if (completenessPct < 60) mistakes.push('Incomplete technical scope compared to university model standard.');
-    if (technicalPct < 50) mistakes.push('Missing critical terminology and precise formal definitions.');
+    if (completenessPct < 60) mistakes.push('Good intuition! You are very close — try to add one simple example to secure full marks.');
+    if (technicalPct < 50) mistakes.push('Your general concept is right! Practicing the standard SPPU definitions will polish your answers.');
   }
 
   return {
@@ -328,14 +331,14 @@ function localSemanticEvaluation(params: {
     completeness_pct: completenessPct,
     technical_correctness_pct: technicalPct,
     relevance_pct: accuracyPct > 0 ? Math.min(100, accuracyPct + 15) : 0,
-    examples_used_score: studentLower.includes('example') || studentLower.includes('e.g.') || studentLower.includes('such as') ? 8 : 3,
-    strengths: strengths.length > 0 ? strengths : ['Attempted basic conceptual description'],
+    examples_used_score: studentLower.includes('example') || studentLower.includes('e.g.') || studentLower.includes('such as') ? 8 : 4,
+    strengths: strengths.length > 0 ? strengths : ['Understands the general concept well', 'Good effort in framing the answer in own words'],
     missing_concepts: missingConcepts.length > 0 ? missingConcepts : ['None, answer covered core concepts.'],
-    mistakes: mistakes.length > 0 ? mistakes : ['No critical errors identified.'],
+    mistakes: mistakes.length > 0 ? mistakes : ['No major errors — concept is on the right track!'],
     suggested_improvements:
       rawMarks === maxMarks
-        ? 'Excellent response! To make it stand out even further, complement with architectural diagrams or edge cases.'
-        : 'Incorporate formal definitions and structured bullet points to ensure complete marks in university evaluations.',
+        ? 'Outstanding response! You have grasped this concept thoroughly.'
+        : 'Great effort! You clearly have the core idea right. To boost marks further in SPPU exams, use bullet points or a brief diagram.',
     model_answer: idealAnswer,
     source_unit_number: unitNumber,
     source_topic_title: topicTitle,
@@ -356,15 +359,17 @@ export async function generateQuestionVariations(params: {
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const prompt = `
-Generate a fresh, unique academic examination question for the topic "${topicTitle}" with concept context: "${conceptSummary}".
+Generate a clear, confidence-building examination question strictly conforming to the Savitribai Phule Pune University (SPPU) syllabus for the topic "${topicTitle}" with concept context: "${conceptSummary}".
 Question Type: ${type}
-Target Difficulty: ${difficulty}
+Target Difficulty: ${difficulty} (Keep questions student-friendly, encouraging, clear, and direct — suitable for average engineering students to understand and answer without unnecessary complexity).
 
-RULES:
-- Must NOT copy questions verbatim from textbooks; generate fresh variations.
-- For MCQs, provide exactly 4 options and mark the correct one.
-- Provide a rigorous ideal model answer.
-- Provide 3-5 key concepts required in the answer.
+SPPU SYLLABUS ALIGNMENT RULES:
+- Focus on core SPPU examination questions (definitions, basic working, standard diagrams, comparisons, real-life examples).
+- Categorize clearly into Easy (direct definition/concept), Medium (explanation/comparison), or Difficult (application/working).
+- Avoid overly convoluted or trick questions. Questions must be encouraging and accessible to boost student morale!
+- For MCQs, provide 4 clear options with 1 unambiguous correct answer.
+- Provide a clear, structured model answer that is easy for a student to learn.
+- Provide 2-4 key conceptual points.
 
 Return ONLY a JSON object:
 {
@@ -390,40 +395,40 @@ Return ONLY a JSON object:
     }
   }
 
-  // Algorithmic dynamic variation generator
+  // Algorithmic dynamic variation generator (SPPU syllabus-focused, student-friendly)
   const templates: Record<QuestionType, string[]> = {
     viva: [
-      `In a viva examination, how would you defend the necessity of ${topicTitle} in high-throughput enterprise systems?`,
-      `Explain the fundamental trade-offs introduced when implementing ${topicTitle}.`,
-      `If a junior engineer asks you why ${topicTitle} cannot be replaced by simpler heuristics, what is your technical reasoning?`
+      `What do you understand by ${topicTitle}? Explain in simple terms with a real-life example.`,
+      `State the main purpose and importance of ${topicTitle} in simple words.`,
+      `How would you explain the basic working of ${topicTitle} to a peer?`
     ],
     mcq: [
-      `Which of the following statements most accurately characterizes ${topicTitle}?`,
-      `In the context of ${topicTitle}, what is the primary structural invariant maintained?`
+      `Which of the following is the primary purpose of ${topicTitle}?`,
+      `In the context of ${topicTitle}, which statement is correct?`
     ],
     '2_marks': [
-      `Define ${topicTitle} and state its primary mathematical or logical formulation.`,
-      `What are the two most critical benefits of ${topicTitle} in modern software architectures?`
+      `Define ${topicTitle} and state any two of its advantages.`,
+      `What is ${topicTitle}? Give one simple example.`
     ],
     '5_marks': [
-      `Provide a comprehensive technical description of ${topicTitle}. Discuss its working mechanism and primary use cases.`,
-      `Explain how ${topicTitle} operates under failure conditions, and state the safeguards utilized.`
+      `Explain ${topicTitle} with a neat diagram and its basic working mechanism.`,
+      `Describe the key features and advantages of ${topicTitle} as per SPPU pattern.`
     ],
     '10_marks': [
-      `Critically analyze ${topicTitle}. Provide a detailed architectural breakdown, algorithmic considerations, failure modes, and a comparison with alternative paradigms.`,
-      `Design an end-to-end framework incorporating ${topicTitle}. Discuss edge cases, scalability bottlenecks, and theoretical guarantees.`
+      `Explain ${topicTitle} in detail with its architecture, working steps, and a practical example.`,
+      `Compare ${topicTitle} with related approaches and discuss its practical applications.`
     ],
     application: [
-      `A high-volume banking platform reports latency spikes under peak load. How can ${topicTitle} be strategically leveraged to mitigate this issue?`,
-      `Describe how an autonomous distributed system applies ${topicTitle} to maintain consistency during partial network degradation.`
+      `Explain how ${topicTitle} is used in real-world computer engineering applications with a simple example.`,
+      `Give a practical scenario where ${topicTitle} provides the most effective solution.`
     ],
     scenario: [
-      `Scenario: A critical transaction fails halfway through an asynchronous batch process. Explain how principles of ${topicTitle} prevent inconsistent state.`,
-      `Scenario: During a database migration, two services attempt concurrent schema adjustments. How does ${topicTitle} resolve conflict?`
+      `Consider a simple real-life system: how does ${topicTitle} help in organizing and processing data effectively?`,
+      `Scenario: If a system needs better performance, how does applying ${topicTitle} help?`
     ],
     case_study: [
-      `Case Study: Consider an e-commerce platform processing 100,000 orders per second. Formulate a technical study on how ${topicTitle} guarantees correctness.`,
-      `Case Study: Evaluate the failure of an un-normalized microservice data layer and outline a remediation blueprint based on ${topicTitle}.`
+      `Discuss a simple case study illustrating how ${topicTitle} is implemented in standard industry software.`,
+      `Explain the step-by-step role of ${topicTitle} in solving a practical engineering problem.`
     ]
   };
 

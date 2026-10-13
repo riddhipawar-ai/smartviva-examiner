@@ -86,29 +86,39 @@ function generateLocalQuestions(content: string, count: number, type: string): G
   return questions;
 }
 
-// Local answer evaluation fallback
+// Local answer evaluation fallback (Lenient & Student-Friendly)
 function evaluateLocally(studentAnswer: string, modelAnswer: string, maxMarks: number): EvaluationResult {
   if (isNonAttempt(studentAnswer)) {
     return {
       marks: 0, maxMarks, percentage: 0, status: 'Incorrect',
-      feedback: 'No attempt made. You must write an answer to receive marks.',
+      feedback: 'No answer attempt provided. Write down what you know to earn points!',
       missingPoints: ['Complete answer required'],
-      suggestions: 'Study the topic and attempt the question again.',
+      suggestions: 'Try writing your understanding in simple words to get encouraging marks.',
       modelAnswer,
     };
   }
 
-  const studentWords = new Set(studentAnswer.toLowerCase().split(/\W+/).filter(w => w.length > 3));
-  const modelWords = new Set(modelAnswer.toLowerCase().split(/\W+/).filter(w => w.length > 3));
+  const studentWords = new Set(studentAnswer.toLowerCase().split(/\W+/).filter(w => w.length > 2));
+  const modelWords = new Set(modelAnswer.toLowerCase().split(/\W+/).filter(w => w.length > 2));
   let overlap = 0;
   modelWords.forEach(w => { if (studentWords.has(w)) overlap++; });
   const ratio = modelWords.size > 0 ? overlap / modelWords.size : 0;
-  const scoreRatio = Math.min(ratio * 1.5, 1);
-  const marks = Math.round(scoreRatio * maxMarks * 10) / 10;
+  
+  // Lenient scoring: award generous marks for expressing core thoughts
+  let scoreRatio = 0.35; // Base encouragement floor for attempting
+  if (ratio >= 0.35) {
+    scoreRatio = 1.0; // Full marks for capturing key concepts
+  } else if (ratio >= 0.2) {
+    scoreRatio = 0.8; // 80% marks for being on the right track
+  } else if (ratio >= 0.1 || studentWords.size >= 4) {
+    scoreRatio = 0.6; // 60% marks for basic understanding and effort
+  }
 
-  let status: EvaluationResult['status'] = 'Incorrect';
+  const marks = Math.max(0.5, Math.round(scoreRatio * maxMarks * 10) / 10);
+
+  let status: EvaluationResult['status'] = 'Partially Correct';
   if (scoreRatio >= 0.75) status = 'Correct';
-  else if (scoreRatio >= 0.35) status = 'Partially Correct';
+  else if (scoreRatio <= 0.3) status = 'Incorrect';
 
   return {
     marks,
@@ -116,12 +126,10 @@ function evaluateLocally(studentAnswer: string, modelAnswer: string, maxMarks: n
     percentage: Math.round(scoreRatio * 100),
     status,
     feedback: status === 'Correct'
-      ? 'Excellent! Your answer covers the key concepts well.'
-      : status === 'Partially Correct'
-      ? 'Your answer is partially correct. Some important points are missing.'
-      : 'Your answer does not sufficiently cover the required concepts.',
-    missingPoints: status !== 'Correct' ? ['Key definitions', 'Practical examples', 'Technical accuracy'] : [],
-    suggestions: status !== 'Correct' ? 'Review the model answer and focus on understanding core concepts.' : '',
+      ? 'Well done! You have explained the concept nicely in your own words.'
+      : 'Good attempt! You understand the basic idea. Review the points below to secure full marks in SPPU exams.',
+    missingPoints: status !== 'Correct' ? ['Add one real-life example or keyword'] : [],
+    suggestions: status !== 'Correct' ? 'Keep it up! Your conceptual direction is right.' : '',
     modelAnswer,
   };
 }
@@ -246,19 +254,20 @@ ${excerpt}`;
 
       if (genAI) {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-        const prompt = `You are a strict university examiner evaluating a student's answer.
+        const prompt = `You are a supportive, encouraging, and fair university examiner evaluating an average engineering student's answer under the SPPU pattern.
 
 Question: ${question}
 Expected Answer: ${modelAnswer}
 Student's Answer: ${studentAnswer}
 Maximum Marks: ${maxMarks}
 
-STRICT EVALUATION RULES:
-- Completely wrong answer: 0 marks
-- "I don't know" or blank or gibberish: 0 marks (already handled, but reconfirm)
-- Partial answer: proportional marks based on quality
-- Correct and complete: full marks
-- No grace marks, no participation marks
+LENIENT & ENCOURAGING EVALUATION RULES:
+- Focus on CONCEPTUAL UNDERSTANDING and student effort, NEVER on exact textbook wording or memorization.
+- If the student is somewhat similar to the concept or near the answer, award generous marks (50% to 80%).
+- If the answer conveys the correct core idea in simple words, award full or near-full marks.
+- Do NOT penalize for grammar or simple student phrasing.
+- Award 0 marks only for empty answers, "I don't know", or pure random gibberish.
+- Feedback must be encouraging and motivating to build the student's confidence.
 
 Return ONLY a valid JSON object:
 {

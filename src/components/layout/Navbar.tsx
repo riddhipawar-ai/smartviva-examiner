@@ -22,6 +22,7 @@ import {
   Sun,
   Menu,
   X,
+  Brain,
 } from 'lucide-react';
 import { User } from '@/types';
 
@@ -66,6 +67,7 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
     { href: '/library', label: 'Curriculum Library', icon: BookOpen },
     { href: '/upload', label: 'Upload Materials', icon: UploadCloud },
+    { href: '/ai-tutor', label: 'AI Tutor', icon: Brain },
     { href: '/create-exam', label: 'Start AI Exam', icon: FileCheck2 },
     { href: '/mistakes', label: 'Mistakes Vault', icon: AlertTriangle },
     { href: '/study-planner', label: 'AI Study Planner', icon: Calendar },
@@ -135,6 +137,17 @@ export default function Navbar() {
               }`}
             >
               Upload Notes
+            </Link>
+            <Link
+              href="/ai-tutor"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                pathname === '/ai-tutor'
+                  ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+              }`}
+            >
+              <Brain className="w-3.5 h-3.5" />
+              AI Tutor
             </Link>
             <Link
               href="/study-planner"
